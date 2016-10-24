@@ -1,0 +1,7 @@
+[package]
+name = "githelper"
+version = "0.1.0"
+authors = ["Alexander Thaller <alexander.thaller@trivago.com>"]
+
+[dependencies]
+git2 = "0.5"
