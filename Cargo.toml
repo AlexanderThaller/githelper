@@ -1,6 +1,6 @@
 [package]
 name = "githelper"
-version = "0.1.1"
+version = "0.1.0"
 authors = ["Alexander Thaller <alexander.thaller@trivago.com>"]
 license = "MIT/Apache-2.0"
 readme = "README.md"
@@ -12,4 +12,4 @@ Wrapper around git2-rs with functions for common tasks related to git repositori
 """
 
 [dependencies]
-git2 = "*"
+git2 = "0.5"
