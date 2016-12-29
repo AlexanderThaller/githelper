@@ -1,4 +1,9 @@
+#[macro_use]
+extern crate log;
+
 use std::io::Result;
+use std::io::Error;
+use std::io::ErrorKind;
 use std::path::Path;
 use std::process::Command;
 
@@ -8,7 +13,14 @@ pub fn get_current_commitid_for_repo(folder: &Path) -> Result<String> {
         .current_dir(folder)
         .output()?;
 
-    Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    trace!("output of current commit command: {:#?}", output);
+
+    if output.status.success() {
+        Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    } else {
+        Err(Error::new(ErrorKind::Other,
+                       format!("{}", String::from_utf8_lossy(&output.stderr))))
+    }
 }
 
 pub fn clone(folder: &Path, remote: &str) -> Result<String> {
@@ -17,7 +29,14 @@ pub fn clone(folder: &Path, remote: &str) -> Result<String> {
         .arg(folder)
         .output()?;
 
-    Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    trace!("output of clone command: {:#?}", output);
+
+    if output.status.success() {
+        Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    } else {
+        Err(Error::new(ErrorKind::Other,
+                       format!("{}", String::from_utf8_lossy(&output.stderr))))
+    }
 }
 
 #[test]
@@ -35,7 +54,14 @@ pub fn add(folder: &Path, file: &Path) -> Result<String> {
         .current_dir(folder)
         .output()?;
 
-    Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    trace!("output of add command: {:#?}", output);
+
+    if output.status.success() {
+        Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    } else {
+        Err(Error::new(ErrorKind::Other,
+                       format!("{}", String::from_utf8_lossy(&output.stderr))))
+    }
 }
 
 pub fn commit(folder: &Path, message: &str) -> Result<String> {
@@ -45,7 +71,14 @@ pub fn commit(folder: &Path, message: &str) -> Result<String> {
         .current_dir(folder)
         .output()?;
 
-    Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    trace!("output of commit command: {:#?}", output);
+
+    if output.status.success() {
+        Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    } else {
+        Err(Error::new(ErrorKind::Other,
+                       format!("{}", String::from_utf8_lossy(&output.stderr))))
+    }
 }
 
 pub fn status(folder: &Path) -> Result<String> {
@@ -53,7 +86,14 @@ pub fn status(folder: &Path) -> Result<String> {
         .current_dir(folder)
         .output()?;
 
-    Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    trace!("output of init command: {:#?}", output);
+
+    if output.status.success() {
+        Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    } else {
+        Err(Error::new(ErrorKind::Other,
+                       format!("{}", String::from_utf8_lossy(&output.stderr))))
+    }
 }
 
 pub fn init(folder: &Path) -> Result<String> {
@@ -61,26 +101,51 @@ pub fn init(folder: &Path) -> Result<String> {
         .current_dir(folder)
         .output()?;
 
-    Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    trace!("output of init command: {:#?}", output);
+
+    if output.status.success() {
+        Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    } else {
+        Err(Error::new(ErrorKind::Other,
+                       format!("{}", String::from_utf8_lossy(&output.stderr))))
+    }
 }
 
 pub fn pull(folder: &Path) -> Result<String> {
+    debug!("pulling git repo in folder {:#?}", folder);
+
     let output = Command::new("git").arg("pull")
         .current_dir(folder)
         .output()?;
 
-    Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    trace!("output of pull command: {:#?}", output);
+
+    if output.status.success() {
+        Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    } else {
+        Err(Error::new(ErrorKind::Other,
+                       format!("{}", String::from_utf8_lossy(&output.stderr))))
+    }
 }
 
 pub fn push(folder: &Path) -> Result<String> {
+    debug!("pushing git repo in folder {:#?}", folder);
+
     let output = Command::new("git").arg("push")
         .current_dir(folder)
         .output()?;
 
-    Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    trace!("output of push command: {:#?}", output);
+
+    if output.status.success() {
+        Ok(format!("{}", String::from_utf8_lossy(&output.stdout)))
+    } else {
+        Err(Error::new(ErrorKind::Other,
+                       format!("{}", String::from_utf8_lossy(&output.stderr))))
+    }
 }
 
 pub fn sync(folder: &Path) -> Result<String> {
-    pull(&folder)?;
-    push(&folder)
+    pull(folder)?;
+    push(folder)
 }
