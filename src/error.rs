@@ -17,9 +17,6 @@ pub enum Error {
     /// Error when file status can not be determined.
     FileStatus(Git2Error),
 
-    /// Error while trying to update given paths in the index.
-    IndexUpdateAll(Git2Error),
-
     /// Error while writing index.
     IndexWrite(Git2Error),
 
@@ -39,12 +36,32 @@ pub enum Error {
     RepositoryHead(Git2Error),
 
     /// Error while trying to peel a reference into a commit.
-    ReferencePeelToCommit(Git2Error),
-
-    /// Error while trying to peel a reference into a commit.
     IndexAddPath(Git2Error),
 
     /// Error while stripping repository prefix from path when trying to walk
     /// through the repository.
     StripRepositoryPrefix(std::path::StripPrefixError),
+}
+
+impl std::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        use Error::*;
+
+        match self {
+            FileStatus(err) => write!(f, "can not determine file status: {}", err),
+            IndexAddPath(err) => write!(f, "can not add path to index: {}", err),
+            IndexOpen(err) => write!(f, "can not open index: {}", err),
+            IndexWrite(err) => write!(f, "can not write index: {}", err),
+            IndexWriteTree(err) => write!(f, "can not write index tree: {}", err),
+            RepositoryCommit(err) => write!(f, "can not commit to repository: {}", err),
+            RepositoryFindTree(err) => write!(f, "can not find tree in repository: {}", err),
+            RepositoryHead(err) => write!(f, "can not find head of repository: {}", err),
+            RepositoryInit(err) => write!(f, "can not init repository: {}", err),
+            RepositoryOpen(err) => write!(f, "can not open repository: {}", err),
+            RepositorySignature(err) => write!(f, "can not get signature from repository: {}", err),
+            StripRepositoryPrefix(err) => {
+                write!(f, "can not strip repository path prefix: {}", err)
+            }
+        }
+    }
 }
