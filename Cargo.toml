@@ -10,6 +10,7 @@ documentation = "http://doc.rust-lang.org/githelper"
 description = """
 Wrapper around git with functions for common tasks related to git repositories.
 """
+edition = "2018"
 
 [dependencies]
 log = "0.3"
