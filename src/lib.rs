@@ -91,6 +91,7 @@ pub fn stage<P: AsRef<Path>, F: AsRef<Path>>(repo_path: P, paths: &[F]) -> Resul
             let fullpath = repo_path.as_ref().join(path);
             fullpath.exists() && fullpath.is_file()
         })
+        .filter(|entry| entry.as_ref() == std::path::PathBuf::from(".git"))
         .map(|path| index.add_path(path.as_ref()).map_err(Error::IndexAddPath))
         .collect::<Result<_, Error>>()?;
 
@@ -101,17 +102,8 @@ pub fn stage<P: AsRef<Path>, F: AsRef<Path>>(repo_path: P, paths: &[F]) -> Resul
 
 /// Stage all paths in the repository.
 pub fn stage_all<P: AsRef<Path>>(repo_path: P) -> Result<(), Error> {
-    fn is_not_hidden(entry: &DirEntry) -> bool {
-        entry
-            .file_name()
-            .to_str()
-            .map(|s| entry.depth() == 0 || !s.starts_with('.'))
-            .unwrap_or(false)
-    };
-
     let paths = WalkDir::new(&repo_path)
         .into_iter()
-        .filter_entry(|entry| is_not_hidden(entry))
         .filter_map(|v| v.ok())
         .filter(|entry| entry.path() != repo_path.as_ref())
         .map(|entry| {
