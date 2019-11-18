@@ -13,4 +13,4 @@ Wrapper around git with functions for common tasks related to git repositories.
 edition = "2018"
 
 [dependencies]
-log = "0.3"
+log = "0.4"
