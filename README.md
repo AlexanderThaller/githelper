@@ -1,2 +1,4 @@
 # githelper
-Wrapper around git2-rs with functions for common tasks related to git repositories.
+
+Helper crate around git2 with functions for common tasks related to git
+repositories.
