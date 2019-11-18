@@ -1,6 +1,6 @@
 [package]
 name = "githelper"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["Alexander Thaller <alexander.thaller@trivago.com>"]
 license = "MIT/Apache-2.0"
 readme = "README.md"
@@ -8,9 +8,14 @@ repository = "https://github.com/AlexanderThaller/githelper"
 homepage = "https://github.com/AlexanderThaller/githelper"
 documentation = "http://doc.rust-lang.org/githelper"
 description = """
-Wrapper around git with functions for common tasks related to git repositories.
+Helper crate around git2 with functions for common tasks related to git
+repositories.
 """
 edition = "2018"
 
 [dependencies]
-log = "0.4"
+git2 = "0.10"
+walkdir = "2"
+
+[dev-dependencies]
+tempfile = "3"
