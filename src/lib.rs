@@ -67,6 +67,10 @@ pub fn stage<P: AsRef<Path>, F: AsRef<Path>>(repo_path: P, paths: &[F]) -> Resul
 
     paths
         .iter()
+        .filter(|path| {
+            let fullpath = repo_path.as_ref().join(path);
+            fullpath.exists() && fullpath.is_file()
+        })
         .map(|path| index.add_path(path.as_ref()).map_err(Error::IndexAddPath))
         .collect::<Result<_, Error>>()?;
 
@@ -129,6 +133,33 @@ mod test {
         super::init(&dir).unwrap();
 
         let files = vec![PathBuf::from("file_does_not_exist")];
+        super::stage(&dir, &files).unwrap();
+    }
+
+    #[test]
+    fn stage_directory() {
+        let dir = tempdir().unwrap();
+        super::init(&dir).unwrap();
+
+        let subdir = dir.path().join("subdir");
+        std::fs::create_dir_all(&subdir).unwrap();
+
+        let files = vec!["subdir"];
+        super::stage(&dir, &files).unwrap();
+    }
+
+    #[test]
+    fn stage_directory_with_subfile() {
+        let dir = tempdir().unwrap();
+        super::init(&dir).unwrap();
+
+        let subdir = dir.path().join("subdir");
+        std::fs::create_dir_all(&subdir).unwrap();
+
+        let subfile = subdir.join("subfile");
+        fs::write(&subfile, "first data").unwrap();
+
+        let files = vec!["subdir", "subdir/subfile"];
         super::stage(&dir, &files).unwrap();
     }
 
@@ -197,13 +228,12 @@ mod test {
 
     #[test]
     fn stage_all_files() {
-        // let dir = tempdir().unwrap();
-        let dir = PathBuf::from("/tmp/blasdasd");
+        let dir = tempdir().unwrap();
         super::init(&dir).unwrap();
 
         let files = vec!["first_file", "second_file", "third_file"];
         for file in &files {
-            let path = dir.as_path().join(file);
+            let path = dir.path().join(file);
             fs::write(&path, file).unwrap();
         }
 
@@ -212,13 +242,12 @@ mod test {
 
     #[test]
     fn commit_all_files() {
-        // let dir = tempdir().unwrap();
-        let dir = PathBuf::from("/tmp/blasdasd");
+        let dir = tempdir().unwrap();
         super::init(&dir).unwrap();
 
         let files = vec!["first_file", "second_file", "third_file"];
         for file in &files {
-            let path = dir.as_path().join(file);
+            let path = dir.path().join(file);
             fs::write(&path, file).unwrap();
         }
 
@@ -227,6 +256,7 @@ mod test {
     }
 
     #[test]
+    #[should_panic]
     fn status_not_a_repository() {
         let dir = tempdir().unwrap();
         super::status(&dir).unwrap();
