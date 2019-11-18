@@ -59,6 +59,26 @@ pub fn init<P: AsRef<Path>>(repo_path: P) -> Result<(), Error> {
     Ok(())
 }
 
+/// Push commits to upstream. By default this will try to push to origin. If
+/// origin does not exist this function will fail with
+/// Error::NoOriginConfigured.
+pub fn push_to_origin<P: AsRef<Path>>(repo_path: P) -> Result<(), Error> {
+    let repository = Repository::open(&repo_path).map_err(Error::RepositoryOpen)?;
+    let mut remote = repository
+        .find_remote("origin")
+        .map_err(|_| Error::NoOriginConfigured)?;
+
+    remote
+        .connect(git2::Direction::Push)
+        .map_err(Error::RemoteConnect)?;
+
+    remote
+        .push(&["refs/heads/master:refs/heads/master"], None)
+        .map_err(Error::RemotePush)?;
+
+    Ok(())
+}
+
 /// Stage given paths in the repository. Paths have to be relative to the
 /// repo_path.
 pub fn stage<P: AsRef<Path>, F: AsRef<Path>>(repo_path: P, paths: &[F]) -> Result<(), Error> {

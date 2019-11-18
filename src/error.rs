@@ -41,6 +41,15 @@ pub enum Error {
     /// Error while stripping repository prefix from path when trying to walk
     /// through the repository.
     StripRepositoryPrefix(std::path::StripPrefixError),
+
+    /// Error when trying to push to origin but not origin is defined.
+    NoOriginConfigured,
+
+    /// Error when connecting to remote.
+    RemoteConnect(Git2Error),
+
+    /// Error when pushing to remote.
+    RemotePush(Git2Error),
 }
 
 impl std::fmt::Display for Error {
@@ -53,6 +62,9 @@ impl std::fmt::Display for Error {
             IndexOpen(err) => write!(f, "can not open index: {}", err),
             IndexWrite(err) => write!(f, "can not write index: {}", err),
             IndexWriteTree(err) => write!(f, "can not write index tree: {}", err),
+            NoOriginConfigured => write!(f, "no origin configured"),
+            RemoteConnect(err) => write!(f, "can not connet to remote: {}", err),
+            RemotePush(err) => write!(f, "can not push to remote: {}", err),
             RepositoryCommit(err) => write!(f, "can not commit to repository: {}", err),
             RepositoryFindTree(err) => write!(f, "can not find tree in repository: {}", err),
             RepositoryHead(err) => write!(f, "can not find head of repository: {}", err),
